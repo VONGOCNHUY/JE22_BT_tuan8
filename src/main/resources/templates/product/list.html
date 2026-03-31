@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+layout:decorate="~{_layout}">
+
+<head>
+<meta charset="UTF-8">
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+<div class="row mb-3">
+    <div class="col-md-8">
+        <form th:action="@{/products/search}" method="GET" class="form-inline">
+            <input type="text" name="keyword" th:value="${keyword != null ? keyword : ''}" 
+                   class="form-control me-2" placeholder="Nhập tên sản phẩm để tìm kiếm..." 
+                   style="flex: 1;">
+            <select name="categoryId" class="form-select me-2">
+                <option value="0">--- Tất cả category ---</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}"
+                        th:selected="${selectedCategoryId == category.id}"></option>
+            </select>
+            <button type="submit" class="btn btn-info">Tìm kiếm</button>
+        </form>
+    </div>
+    <div class="col-md-4 text-end">
+        <a th:href="@{/products}" class="btn btn-secondary">Xem tất cả</a>
+    </div>
+</div>
+
+<div th:if="${searchMessage}" class="alert alert-info alert-dismissible fade show" role="alert">
+    <strong>Thông báo:</strong> <span th:text="${searchMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <a th:href="@{/products/add}" class="btn btn-primary" sec:authorize="hasRole('ADMIN')">Create New Product</a>
+    </div>
+    <div class="col-md-6 text-end">
+        <label class="me-2">Sắp xếp theo giá:</label>
+        <th:block th:if="${keyword != null && !keyword.isEmpty()}">
+            <a th:href="@{/products/search(keyword=${keyword}, categoryId=${selectedCategoryId}, page=0, sort='price_asc')}" 
+               th:classappend="${currentSort == 'price_asc' ? 'btn btn-success' : 'btn btn-outline-secondary'}" 
+               class="btn btn-sm">↑ Tăng dần</a>
+            <a th:href="@{/products/search(keyword=${keyword}, categoryId=${selectedCategoryId}, page=0, sort='price_desc')}" 
+               th:classappend="${currentSort == 'price_desc' ? 'btn btn-success' : 'btn btn-outline-secondary'}" 
+               class="btn btn-sm">↓ Giảm dần</a>
+        </th:block>
+        <th:block th:unless="${keyword != null && !keyword.isEmpty()}">
+            <a th:href="@{/products(categoryId=${selectedCategoryId}, page=0, sort='price_asc')}" 
+               th:classappend="${currentSort == 'price_asc' ? 'btn btn-success' : 'btn btn-outline-secondary'}" 
+               class="btn btn-sm">↑ Tăng dần</a>
+            <a th:href="@{/products(categoryId=${selectedCategoryId}, page=0, sort='price_desc')}" 
+               th:classappend="${currentSort == 'price_desc' ? 'btn btn-success' : 'btn btn-outline-secondary'}" 
+               class="btn btn-sm">↓ Giảm dần</a>
+        </th:block>
+    </div>
+</div>
+
+<table class="table table-striped">
+
+<thead>
+<tr>
+<th>#</th>
+<th>Name</th>
+<th>Image</th>
+<th>Price</th>
+<th>Category</th>
+<th>Hành động</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr th:each="product : ${products}">
+<td th:text="${product.id}"></td>
+
+<td th:text="${product.name}"></td>
+
+<td>
+<img height="120" width="150" th:src="${product.image}">
+</td>
+
+<td th:text="${product.price}"></td>
+
+<td th:text="${product.category != null ? product.category.name : ''}"></td>
+
+<td>
+<a th:href="@{/cart/add/{id}(id=${product.id})}" class="btn btn-success btn-sm">🛒 Add to Cart</a>
+
+<th:block sec:authorize="hasRole('ADMIN')">
+<a th:href="@{/products/edit/{id}(id=${product.id})}"
+class="btn btn-secondary btn-sm">✏️ Edit</a>
+
+<a th:href="@{/products/delete/{id}(id=${product.id})}"
+class="btn btn-danger btn-sm">🗑️ Delete</a>
+</th:block>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<!-- Phân trang -->
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${!hasPrevious ? 'disabled' : ''}">
+            <th:block th:if="${keyword != null && !keyword.isEmpty()}">
+                <a class="page-link" th:if="${hasPrevious}" 
+                   th:href="@{/products/search(keyword=${keyword}, categoryId=${selectedCategoryId}, page=${currentPage - 1}, sort=${currentSort})}">
+                    Previous
+                </a>
+                <span class="page-link" th:if="${!hasPrevious}">Previous</span>
+            </th:block>
+            <th:block th:unless="${keyword != null && !keyword.isEmpty()}">
+                <a class="page-link" th:if="${hasPrevious}" 
+                   th:href="@{/products(categoryId=${selectedCategoryId}, page=${currentPage - 1}, sort=${currentSort})}">
+                    Previous
+                </a>
+                <span class="page-link" th:if="${!hasPrevious}">Previous</span>
+            </th:block>
+        </li>
+        
+        <li class="page-item active">
+            <span class="page-link" th:text="${currentPage + 1} + ' / ' + ${totalPages}"></span>
+        </li>
+        
+        <li class="page-item" th:classappend="${!hasNext ? 'disabled' : ''}">
+            <th:block th:if="${keyword != null && !keyword.isEmpty()}">
+                <a class="page-link" th:if="${hasNext}" 
+                   th:href="@{/products/search(keyword=${keyword}, categoryId=${selectedCategoryId}, page=${currentPage + 1}, sort=${currentSort})}">
+                    Next
+                </a>
+                <span class="page-link" th:if="${!hasNext}">Next</span>
+            </th:block>
+            <th:block th:unless="${keyword != null && !keyword.isEmpty()}">
+                <a class="page-link" th:if="${hasNext}" 
+                   th:href="@{/products(categoryId=${selectedCategoryId}, page=${currentPage + 1}, sort=${currentSort})}">
+                    Next
+                </a>
+                <span class="page-link" th:if="${!hasNext}">Next</span>
+            </th:block>
+        </li>
+    </ul>
+</nav>
+
+<div class="text-center text-muted small mt-2">
+    <p th:text="'Tổng số sản phẩm: ' + ${totalElements}"></p>
+</div>
+
+</div>
+
+</body>
+</html>

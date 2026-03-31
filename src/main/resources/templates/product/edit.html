@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{_layout}">
+
+<head>
+<meta charset="UTF-8">
+<title>Edit Product</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+<h2>Edit Product</h2>
+
+<form th:action="@{/products/save}" th:object="${product}" method="post">
+
+<input type="hidden" th:field="*{id}">
+
+<div class="form-group">
+    <label>Name</label>
+    <input type="text" th:field="*{name}" class="form-control" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+</div>
+
+<div class="form-group">
+<label>Image URL</label>
+<input type="text" th:field="*{image}" class="form-control">
+</div>
+
+<div class="form-group">
+<label>Price</label>
+<input type="number" th:field="*{price}" class="form-control">
+</div>
+
+<div class="form-group">
+<label>Category</label>
+
+<select th:field="*{category.id}" class="form-control">
+
+<option th:each="c : ${categories}"
+        th:value="${c.id}"
+        th:text="${c.name}">
+</option>
+
+</select>
+
+</div>
+
+<br>
+
+<button type="submit" class="btn btn-primary">Update Product</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

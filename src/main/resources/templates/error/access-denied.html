@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+layout:decorate="~{_layout}">
+
+<head>
+<meta charset="UTF-8">
+<title>Access Denied</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+<div class="alert alert-danger" role="alert" style="margin-top: 50px; text-align: center;">
+    <h3>🚫 Bạn không có quyền hạn để thực hiện tác vụ này!</h3>
+    
+    <div style="margin-top: 30px;">
+        <a th:href="@{/products}" class="btn btn-primary">← Quay lại danh sách sản phẩm</a>
+    </div>
+</div>
+
+</div>
+
+</body>
+</html>

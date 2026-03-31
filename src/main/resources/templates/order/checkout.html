@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+layout:decorate="~{_layout}">
+
+<head>
+<meta charset="UTF-8">
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+<h2 class="mb-4">💳 Thanh toán đơn hàng</h2>
+
+<div th:if="${error}" class="alert alert-danger">
+    <span th:text="${error}"></span>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Chi tiết đơn hàng</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Tổng tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartItems}">
+                            <td th:text="${item.productName}"></td>
+                            <td th:text="${#numbers.formatInteger(item.price, 0)} + ' đ'"></td>
+                            <td th:text="${item.quantity}"></td>
+                            <td th:text="${#numbers.formatInteger(item.totalPrice, 0)} + ' đ'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr>
+                <div class="text-end">
+                    <h5>Tổng tiền: <span th:text="${#numbers.formatInteger(totalPrice, 0)} + ' đ'" class="text-success"></span></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Xác nhận thanh toán</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/order/place-order}" method="POST">
+                    <div class="mb-3">
+                        <p sec:authentication="name"></p>
+                        <p>Bạn đang thanh toán với tài khoản <strong sec:authentication="name"></strong></p>
+                    </div>
+                    <div class="mb-3">
+                        <p>Tổng số tiền: <strong th:text="${#numbers.formatInteger(totalPrice, 0)} + ' đ'"></strong></p>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 btn-lg">✓ Xác nhận thanh toán</button>
+                    <a href="/cart" class="btn btn-secondary w-100 mt-2">← Quay lại giỏ hàng</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+</body>
+</html>
