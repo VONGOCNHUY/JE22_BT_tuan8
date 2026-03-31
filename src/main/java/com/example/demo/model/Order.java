@@ -24,6 +24,9 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime orderDate;
 
+    @Column(nullable = true)
+    private String paymentMethod;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
 }

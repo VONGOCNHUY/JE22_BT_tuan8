@@ -21,10 +21,11 @@ public class OrderService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Order createOrder(Account account, List<CartItem> cartItems) {
+    public Order createOrder(Account account, List<CartItem> cartItems, String paymentMethod) {
         Order order = new Order();
         order.setAccount(account);
         order.setOrderDate(LocalDateTime.now());
+        order.setPaymentMethod(paymentMethod);
 
         long totalPrice = 0;
         for (CartItem item : cartItems) {
@@ -51,5 +52,9 @@ public class OrderService {
 
     public Order getOrderById(Long id) {
         return orderRepository.findById(id).orElse(null);
+    }
+
+    public List<Order> getOrdersByAccount(Account account) {
+        return orderRepository.findByAccountOrderByOrderDateDesc(account);
     }
 }

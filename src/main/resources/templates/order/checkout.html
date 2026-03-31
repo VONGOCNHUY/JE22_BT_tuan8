@@ -46,6 +46,7 @@ layout:decorate="~{_layout}">
                 </table>
                 <hr>
                 <div class="text-end">
+                    <p>Tổng số sản phẩm: <strong th:text="${#lists.size(cartItems)}" class="text-primary"></strong></p>
                     <h5>Tổng tiền: <span th:text="${#numbers.formatInteger(totalPrice, 0)} + ' đ'" class="text-success"></span></h5>
                 </div>
             </div>
@@ -60,11 +61,22 @@ layout:decorate="~{_layout}">
             <div class="card-body">
                 <form th:action="@{/order/place-order}" method="POST">
                     <div class="mb-3">
-                        <p sec:authentication="name"></p>
-                        <p>Bạn đang thanh toán với tài khoản <strong sec:authentication="name"></strong></p>
+                        <label>Tài khoản:</label>
+                        <p><strong sec:authentication="name"></strong></p>
                     </div>
                     <div class="mb-3">
-                        <p>Tổng số tiền: <strong th:text="${#numbers.formatInteger(totalPrice, 0)} + ' đ'"></strong></p>
+                        <label>Phương thức thanh toán:</label>
+                        <select class="form-select" name="paymentMethod" required>
+                            <option value="">-- Chọn phương thức --</option>
+                            <option value="credit_card">💳 Thẻ tín dụng</option>
+                            <option value="debit_card">🏧 Thẻ ghi nợ</option>
+                            <option value="cash">💵 Tiền mặt khi nhận hàng</option>
+                            <option value="bank_transfer">🏦 Chuyển khoản ngân hàng</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Tổng số tiền:</label>
+                        <p><strong th:text="${#numbers.formatInteger(totalPrice, 0)} + ' đ'"></strong></p>
                     </div>
                     <button type="submit" class="btn btn-success w-100 btn-lg">✓ Xác nhận thanh toán</button>
                     <a href="/cart" class="btn btn-secondary w-100 mt-2">← Quay lại giỏ hàng</a>

@@ -48,7 +48,8 @@ public class OrderController {
 
     // Xử lý thanh toán
     @PostMapping("/place-order")
-    public String placeOrder(HttpSession session, Authentication authentication, Model model) {
+    public String placeOrder(HttpSession session, Authentication authentication, Model model, 
+                            @RequestParam("paymentMethod") String paymentMethod) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return "redirect:/login";
         }
@@ -66,7 +67,7 @@ public class OrderController {
         }
 
         // Tạo order
-        Order order = orderService.createOrder(account, cart);
+        Order order = orderService.createOrder(account, cart, paymentMethod);
 
         // Xóa giỏ hàng sau khi đặt hàng thành công
         session.removeAttribute("cart");
@@ -74,6 +75,23 @@ public class OrderController {
         model.addAttribute("orderId", order.getId());
         model.addAttribute("totalPrice", order.getTotalPrice());
         return "order/success";
+    }
+
+    // Xem lịch sử đơn hàng
+    @GetMapping("/list")
+    public String listOrders(Authentication authentication, Model model) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        Account account = accountService.getAccountByUsername(authentication.getName());
+        if (account == null) {
+            return "redirect:/login";
+        }
+
+        List<Order> orders = orderService.getOrdersByAccount(account);
+        model.addAttribute("orders", orders);
+        return "order/list";
     }
 
     // Xem chi tiết order

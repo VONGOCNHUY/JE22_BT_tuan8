@@ -20,6 +20,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div>
 <a class="navbar-brand" th:href="@{/products}">Home</a>
 <a class="navbar-brand" th:href="@{/products/add}">Products</a>
+<a class="navbar-brand" th:href="@{/order/list}">📋 Lịch sử đơn hàng</a>
 <a class="navbar-brand" th:href="@{/cart}">🛒 Giỏ hàng <span class="badge bg-danger" th:if="${session.cart != null and session.cart.size() > 0}" th:text="${session.cart.size()}"></span></a>
 </div>
 
